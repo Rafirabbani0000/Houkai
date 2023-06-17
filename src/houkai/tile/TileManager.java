@@ -5,6 +5,7 @@
 package houkai.tile;
 
 import houkai.GamePanel;          //--> Mengatur tampilan dan perilaku permainan.
+import houkai.UtilityTool;
 import java.awt.Graphics2D;       //--> Mengatur transformasi dan kualitas gambar.
 import java.io.BufferedReader;    //--> Untuk membaca data dari aliran input dengan buffering, yg memungkinkan pembacaan data lebih efisien.
 import java.io.IOException;       //--> Untuk pengecualian yg dilemparkan ketika terjadi kesalahan atau gangguan dalam operasi input/output.
@@ -16,24 +17,83 @@ import javax.imageio.ImageIO;     //--> Untuk membaca gambar dari file atau menu
  *
  * @author AsuS
  */
-public final class TileManager {
-
-    GamePanel gamePanel;
+public class TileManager {
+    GamePanel gp;
     public Tile[] tile;
     public int mapTileNum[][];
+<<<<<<< Updated upstream
 
     public TileManager(GamePanel gp) {
         this.gamePanel = gp;
         tile = new Tile[40];
         mapTileNum = new int[gp.maxWorldCol][gp.maxWorldRow];
+=======
+    
+    public TileManager(GamePanel gp){
+        this.gp = gp;
+        tile = new Tile[50];
+        mapTileNum = new int[gp.maxWorldCol][gp.maxWorldRow]; 
+>>>>>>> Stashed changes
         getTileImage();
         loadMap("/maps/worldMap.txt");
     }
-
+    
     //--> Untuk Mengambil gambar
-    public void getTileImage() {
-        try {
+    public void getTileImage(){
+        try{
             // ===== Road =====
+            setup(0,"road_1",false);
+            setup(1,"road_2",true); //--> Untuk petak yg tidak bisa tabrak atau di tembus
+            setup(2,"road_3",true);
+            // ===== Base Map =====
+            setup(3,"map",true);
+            // ===== Wall =====
+            setup(4,"wall_top",true);
+            setup(5,"wall_down",true);
+            setup(6,"wall_left",true);
+            setup(7,"wall_right",true);
+            // ===== Corner Wall (1) =====
+            setup(8,"road_1",true);
+            setup(9,"road_1",true);
+            setup(10,"road_1",true);
+            setup(11,"road_1",true);
+            // ===== Corner Wall (2) =====
+            setup(12,"road_1",true);
+            setup(13,"road_1",true);
+            setup(14,"road_1",true);
+            setup(15,"road_1",true);
+            // ===== Pilar =====
+            setup(16,"road_1",true);
+            setup(17,"road_1",true);
+            setup(18,"road_1",true);
+            setup(19,"road_1",true);
+             // ===== Underground (1) =====
+            setup(20,"road_1",true);
+            setup(21,"road_1",true);
+            setup(22,"road_1",true);
+             // ===== Underground (2) =====
+            setup(23,"road_1",true);
+            setup(24,"road_1",true);
+            setup(25,"road_1",true);
+            setup(26,"road_1",true);
+            setup(27,"road_1",true);
+             // ===== Underground (3) =====
+            setup(28,"road_1",true);
+            setup(29,"road_1",true);
+            setup(30,"road_1",true);
+            // ===== Ladder =====
+            setup(31,"road_1",false);
+            // ===== Stone =====
+            setup(32,"road_1",true);
+            // ===== Lamp =====
+            setup(33,"road_1",true);
+            setup(34,"road_1",true);
+            setup(35,"road_1",true);
+            setup(36,"road_1",true);
+            // ===== Chest =====
+            setup(37,"road_1",true);
+           // ===== Road =====
+            
             tile[0] = new Tile();
             tile[0].image = ImageIO.read(getClass().getResourceAsStream("/tiles/road_1.png"));
 
@@ -192,52 +252,78 @@ public final class TileManager {
             tile[36].image = ImageIO.read(getClass().getResourceAsStream("/tiles/lamp_4.png"));
             tile[36].collision = true;
             
+<<<<<<< Updated upstream
             tile[37] = new Tile(); 
             tile[37].image = ImageIO.read(getClass().getResourceAsStream("/tiles/chest_1.png"));
             tile[37].collision = true;
 
         } catch (IOException e) {
+=======
+            // ===== chest =====
+            tile[37] = new Tile(); 
+            tile[37].image = ImageIO.read(getClass().getResourceAsStream("/tiles/chest_1.png"));
+            tile[37].collision = true;
+           
+        }catch(IOException e){
+>>>>>>> Stashed changes
             e.printStackTrace();
         }
     }
-
-    public void loadMap(String filePath) {
+    
+    public void setup(int index, String imagePath, boolean collision){
+        
+        UtilityTool uTool = new UtilityTool ();
+        
         try {
-            InputStream inputStream = getClass().getResourceAsStream(filePath);
-            try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream))) {
-                int col = 0;
-                int row = 0;
-                
-                //--> Untuk pengecekan agar tidak ada data diluar batas map.txt
-                while (col < gamePanel.maxWorldCol && row < gamePanel.maxWorldRow) {
-                    String line = bufferedReader.readLine(); // --> Untuk membaca data 1 baris saja dalam bentuk String
-                    
-                    while (col < gamePanel.maxWorldCol) {
-                        String numbers[] = line.split(" "); //--> Untuk memisahkan line menjadi 1/1 dan dimasukkan ke array
-                        int num = Integer.parseInt(numbers[col]); //--> Untuk mengubah String ke Int
-                        mapTileNum[col][row] = num; //--> index = col & row
-                        col++;
-                    }
-                    if (col == gamePanel.maxWorldCol) {
-                        col = 0;
-                        row++;
-                    }
-                }
-            }
-        } catch (Exception e) {
-
+            tile[index] = new Tile();
+            tile[index].image = ImageIO.read(getClass().getResourceAsStream("/tiles/" + imagePath + ".png"));
+            tile[index].image = uTool.scaleImage(tile[index].image, gp.tileSize, gp.tileSize);
+            tile[index].collision = collision;
+            
+        }catch(IOException e){
+            e.printStackTrace();
         }
     }
-
+    
+    public void loadMap(String filePath){
+        try{
+            InputStream is = getClass().getResourceAsStream(filePath);
+            BufferedReader br = new BufferedReader(new InputStreamReader(is)); 
+            
+            int col = 0;
+            int row = 0;
+            
+            //--> Untuk pengecekan agar tidak ada data diluar batas map.txt
+            while(col < gp.maxWorldCol && row < gp.maxWorldRow){
+                String line = br.readLine(); // --> Untuk membaca data 1 baris saja dalam bentuk String 
+                
+                while(col < gp.maxWorldCol){
+                    String numbers[] = line.split(" "); //--> Untuk memisahkan line menjadi 1/1 dan dimasukkan ke array
+                    int num = Integer.parseInt(numbers[col]); //--> Untuk mengubah String ke Int
+                    mapTileNum[col][row] = num; //--> index = col & row
+                    col++;
+                }
+                if(col == gp.maxWorldCol){
+                    col = 0;
+                    row++;
+                }
+            }
+            br.close();
+        }catch(Exception e){
+            
+        }
+    }
+    
 //--> Untuk menggambar map     
-    public void draw(Graphics2D g2) {
+    public void draw(Graphics2D g2){
         int worldCol = 0;
         int worldRow = 0;
-
-        while (worldCol < gamePanel.maxWorldCol && worldRow < gamePanel.maxWorldRow) {
-            int tileNum = mapTileNum[worldCol][worldRow]; //--> Untuk mengubah num menjadi map dan akan dimasukkan ke array mapTileNum
-
+        
+        while(worldCol < gp.maxWorldCol && worldRow < gp.maxWorldRow){
+            int tileNum = mapTileNum[worldCol][ worldRow]; //--> Untuk mengubah num menjadi map dan akan dimasukkan ke array mapTileNum
+            
             //--> Untuk player agar berada pada posisi tengah dan menampilkan map sesuai ukuran screen 
+<<<<<<< Updated upstream
             int worldX = worldCol * gamePanel.tileSize;
             int worldY = worldRow * gamePanel.tileSize;
             int screenX = worldX - gamePanel.getPlayer().getWorldX() + gamePanel.getPlayer().screenX;
@@ -249,12 +335,25 @@ public final class TileManager {
                     && worldY + gamePanel.tileSize > gamePanel.getPlayer().getWorldY() - gamePanel.getPlayer().screenY
                     && worldY - gamePanel.tileSize < gamePanel.getPlayer().getWorldY() + gamePanel.getPlayer().screenY) {
 
+=======
+            int worldX = worldCol * gp.tileSize;
+            int worldY = worldRow * gp.tileSize;
+            int screenX = worldX - gp.player.worldX + gp.player.screenX;
+            int screenY = worldY - gp.player.worldY + gp.player.screenY ;
+            
+            //--> berfungsi untuk menggambar tiles disekitar player saja jadi tidak melebihi screen
+            if(worldX + gp.tileSize > gp.player.worldX - gp.player.screenX && 
+               worldX - gp.tileSize < gp.player.worldX + gp.player.screenX &&
+               worldY + gp.tileSize > gp.player.worldY - gp.player.screenY &&
+               worldY - gp.tileSize < gp.player.worldY + gp.player.screenY){
+                
+>>>>>>> Stashed changes
                 //--> Untuk Mencetak Gambar Map 
-                g2.drawImage(tile[tileNum].image, screenX, screenY, gamePanel.tileSize, gamePanel.tileSize, null);
+                g2.drawImage(tile[tileNum].image, screenX, screenY, gp.tileSize, gp.tileSize, null);
             }
             worldCol++;
-
-            if (worldCol == gamePanel.maxWorldCol) {
+            
+            if(worldCol == gp.maxWorldCol){
                 worldCol = 0;
                 worldRow++;
             }
